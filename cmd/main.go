@@ -6,6 +6,7 @@ import (
 	"os"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
+	"github.com/cmd/api"
 )
 
 func main() {
@@ -32,4 +33,10 @@ func main() {
 	}
 
 	log.Println("Connected to:", version)
+	server := api.NewAPIServer(":8080", conn)
+    
+    // Jalankan
+    if err := server.Run(); err != nil {
+        log.Fatal("Server error:", err)
+    }
 }
