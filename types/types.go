@@ -22,3 +22,27 @@ type UpdateUserPayload struct {
 	FitnessGoal   string `json:"fitness_goal"`
 	ActivityLevel string `json:"activity_level"`
 }
+
+type FoodEntry struct {
+	ID        int64     `json:"id_food_entry"`
+	IDUser    int64     `json:"id_user"`
+	FoodName  string    `json:"food_name"`
+	Date      string    `json:"date"`     // Format YYYY-MM-DD
+	Time      string    `json:"time"`     // Format HH:MM:SS
+	Calories  float64   `json:"calories"` // float8 di DB = float64 di Go
+	Protein   float64   `json:"protein"`
+	Carbs     float64   `json:"carbs"`
+	Fats      float64   `json:"fats"`     // Pake 's' sesuai screenshot
+	CreatedAt time.Time `json:"created_at"`
+}
+
+// Data yang dikirim User lewat Postman/Android
+type FoodEntryPayload struct {
+	FoodName string  `json:"food_name"`
+	Date     string  `json:"date"`
+	Time     string  `json:"time"`
+	Calories float64 `json:"calories"`
+	Protein  float64 `json:"protein"`
+	Carbs    float64 `json:"carbs"`
+	Fats     float64 `json:"fats"`
+}
