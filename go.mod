@@ -10,6 +10,7 @@ require (
 
 require (
 	github.com/MicahParks/keyfunc/v2 v2.1.0 // indirect
+	github.com/go-chi/chi v1.5.5 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.2 // indirect
 	github.com/golang-jwt/jwt/v5 v5.0.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

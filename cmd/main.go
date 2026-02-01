@@ -4,9 +4,12 @@ import (
 	"context"
 	"log"
 	"os"
+
+	"github.com/cmd/api"
+	"github.com/go-chi/chi"
+	"github.com/internal/auth"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
-	"github.com/cmd/api"
 )
 
 func main() {
@@ -39,4 +42,13 @@ func main() {
     if err := server.Run(); err != nil {
         log.Fatal("Server error:", err)
     }
+
+	jwks := os.Getenv("SUPABASE_JWKS_URL")
+	r := chi.NewRouter()
+	verifier, err := auth.NewVerifier(jwks)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	r.Use(auth.Middleware(verifier))
 }
