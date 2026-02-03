@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/cmd/api"
-	"github.com/go-chi/chi"
 	"github.com/internal/auth"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 )
@@ -19,9 +19,11 @@ func main() {
 
 	dsn := os.Getenv("DATABASE_URL")
 	config, err := pgxpool.ParseConfig(dsn)
-    if err != nil {
-        log.Fatal("ParseConfig error:", err)
-    }
+	if err != nil {
+		log.Fatal("ParseConfig error:", err)
+	}
+
+	config.ConnConfig.DefaultQueryExecMode = pgx.QueryExecModeSimpleProtocol
 
 	conn, err := pgxpool.NewWithConfig(context.Background(), config)
 	if err != nil {
@@ -36,19 +38,16 @@ func main() {
 	}
 
 	log.Println("Connected to:", version)
-	server := api.NewAPIServer(":8080", conn)
-    
-    // Jalankan
-    if err := server.Run(); err != nil {
-        log.Fatal("Server error:", err)
-    }
 
 	jwks := os.Getenv("SUPABASE_JWKS_URL")
-	r := chi.NewRouter()
 	verifier, err := auth.NewVerifier(jwks)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	r.Use(auth.Middleware(verifier))
+	// Jalankan
+	server := api.NewAPIServer(":8080", conn, verifier)
+	if err := server.Run(); err != nil {
+		log.Fatal("Server error:", err)
+	}
 }

@@ -3,7 +3,6 @@ package user
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/internal/auth"
@@ -20,42 +19,32 @@ func NewHandler(store *Store) *Handler {
 }
 
 func (h *Handler) RegisterRoutes(router chi.Router) {
+	// Profil
 	router.Get("/me", h.handleGetUser)
 	router.Post("/me", h.handleUpsertUser)
 }
 
 func (h *Handler) handleGetUser(w http.ResponseWriter, r *http.Request) {
 	// Get authenticated user from context
-	authUser, err := auth.UserFromContext(r.Context())
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
+    authUser, err := auth.UserFromContext(r.Context())
+    if err != nil {
+        utils.WriteError(w, http.StatusUnauthorized, err)
+        return
+    }
 
-	// Konversi ID dari string URL ke int64
-	userID, err := strconv.ParseInt(authUser.Sub, 10, 64)
-	if err != nil {
-		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("ID user harus berupa angka"))
-		return
-	}
-
-	user, err := h.store.GetUserByID(userID)
-	if err != nil {
-		utils.WriteError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	utils.WriteJSON(w, http.StatusOK, user)
+    utils.WriteJSON(w, http.StatusOK, authUser)
 }
 
 func (h *Handler) handleUpsertUser(w http.ResponseWriter, r *http.Request) {
-	authUser, err := auth.UserFromContext(r.Context())
-	if err != nil {
-		utils.WriteError(w, http.StatusUnauthorized, err)
-		return
-	}
+	// Get authenticated user from context
+    authUser, err := auth.UserFromContext(r.Context())
+    if err != nil {
+        utils.WriteError(w, http.StatusUnauthorized, err)
+        return
+    }
 
-	userID, err := strconv.ParseInt(authUser.Sub, 10, 64)
+    utils.WriteJSON(w, http.StatusOK, authUser)
+
 	if err != nil {
 		utils.WriteError(w, http.StatusBadRequest, fmt.Errorf("ID user harus berupa angka"))
 		return
@@ -85,7 +74,7 @@ func (h *Handler) handleUpsertUser(w http.ResponseWriter, r *http.Request) {
 
 	// Siapkan Objek User
 	user := types.User{
-		ID:            userID,
+		ID:            payload.ID,
 		Email:         authUser.Email, // TODO: Ambil dari Token JWT nanti
 		FullName:      payload.FullName,
 		FitnessGoal:   payload.FitnessGoal,

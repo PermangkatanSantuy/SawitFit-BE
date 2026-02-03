@@ -21,4 +21,21 @@ type UpdateUserPayload struct {
 	FullName      string `json:"full_name" validate:"required"`
 	FitnessGoal   string `json:"fitness_goal"`
 	ActivityLevel string `json:"activity_level"`
+	ID            int64  `json:"id_user"`
+}
+
+// Types untuk Input (Request)
+type CreateWeightEntryPayload struct {
+	Weight float64 `json:"weight_kg"`
+	Date   string  `json:"date"` // Format: "YYYY-MM-DD" (Contoh: "2026-02-02")
+	ID     string   `json:"id_user"`
+}
+
+// Types untuk Output (Response dari Database)
+type WeightEntry struct {
+	ID        int64   `json:"id"`
+	UserID    string  `json:"user_id"`
+	Weight    float64 `json:"weight_kg"`
+	Date      string  `json:"date"`
+	CreatedAt string  `json:"created_at"`
 }
