@@ -4,7 +4,7 @@ import (
 	"context" // <-- Wajib ada buat pgx
 	"fmt"
 
-	"github.com/jackc/pgx/v5" // Buat handle error
+	"github.com/jackc/pgx/v5"         // Buat handle error
 	"github.com/jackc/pgx/v5/pgxpool" // Library temanmu
 	"github.com/types"
 )
@@ -60,7 +60,7 @@ func (s *Store) GetUserByID(userID int64) (*types.User, error) {
 	return &u, nil
 }
 
-func (s *Store) UpsertUserProfil(u types.User) error {
+func (s *Store) UpsertUserProfile(u types.User) error {
 	// PERBAIKAN: Kita tambahkan kolom 'password' dan isi dengan string random ("-")
 	// Ini supaya database tidak error "violates not-null".
 	// Password asli nanti diurus fitur Register/Login, bukan di sini.
