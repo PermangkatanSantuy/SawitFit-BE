@@ -24,6 +24,9 @@ func (h *Handler) RegisterRoutes(router chi.Router) {
 	router.Route("/weight", func(r chi.Router) {
 		r.Post("/", h.handleCreateWeight)
 		r.Get("/", h.handleGetWeightHistory)
+
+		// Rute untuk menghapus data berat badan
+		r.Delete("/reset", h.HandlerResetWeight)
 	})
 }
 
@@ -31,13 +34,13 @@ func (h *Handler) RegisterRoutes(router chi.Router) {
 
 func (h *Handler) handleCreateWeight(w http.ResponseWriter, r *http.Request) {
 	// Get authenticated user from context
-    authUser, err := auth.UserFromContext(r.Context())
-    if err != nil {
-        utils.WriteError(w, http.StatusUnauthorized, err)
-        return
-    }
+	authUser, err := auth.UserFromContext(r.Context())
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+		return
+	}
 
-    utils.WriteJSON(w, http.StatusOK, authUser)
+	utils.WriteJSON(w, http.StatusOK, authUser)
 
 	var payload types.CreateWeightEntryPayload
 	if err := utils.ParseJSON(r, &payload); err != nil {
@@ -67,25 +70,44 @@ func (h *Handler) handleCreateWeight(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) handleGetWeightHistory(w http.ResponseWriter, r *http.Request) {
 	// Get authenticated user from context
-    authUser, err := auth.UserFromContext(r.Context())
-    if err != nil {
-        utils.WriteError(w, http.StatusUnauthorized, err)
-        return
-    }
-
-    utils.WriteJSON(w, http.StatusOK, authUser)
-
-	var payload types.CreateWeightEntryPayload
-	if err := utils.ParseJSON(r, &payload); err != nil {
-		utils.WriteError(w, http.StatusBadRequest, err)
+	authUser, err := auth.UserFromContext(r.Context())
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
 		return
 	}
 
-	history, err := h.store.GetWeightHistory(payload.ID)
+	utils.WriteJSON(w, http.StatusOK, authUser)
+
+	// untuk mendapatkan user id 
+	userID := authUser.Sub
+
+	history, err := h.store.GetWeightHistory(userID)
 	if err != nil {
 		utils.WriteError(w, http.StatusInternalServerError, err)
 		return
 	}
 
 	utils.WriteJSON(w, http.StatusOK, history)
+}
+
+func (h *Handler) HandlerResetWeight(w http.ResponseWriter, r *http.Request) {
+	// 1. mendapatkan data pengguna
+	authUser, err := auth.UserFromContext(r.Context())
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, err)
+	}
+
+	// Infoin identitas user
+	utils.WriteJSON(w, http.StatusOK, authUser)
+
+	// 2. mengambil id dari user ke string
+	userID := authUser.Sub
+
+	// 3. menjalankan function hapus/reset berat
+	if err := h.store.ResetWeightHistory(userID); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "Berat berhasil di reset"})
 }

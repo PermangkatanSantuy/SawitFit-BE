@@ -21,10 +21,6 @@ func NewStore(db *pgxpool.Pool) *Store {
 // ---------------------------------------------------------
 
 func (s *Store) CreateWeightEntry(entry types.WeightEntry) error {
-	// query := `
-	// 	INSERT INTO weight_entries (id_user, weight_kg, date)
-	// 	VALUES ($1, $2, $3)
-	// `
 
 	query := `
 		INSERT INTO weight_entries (id_user, weight_kg, date) 
@@ -64,3 +60,14 @@ func (s *Store) GetWeightHistory(userID string) ([]types.WeightEntry, error) {
 }
 
 // kalo mau buat pencarian getweight berdasarkan tanggal khsusu buat function baru
+
+func (s *Store) ResetWeightHistory(userID string) error {
+	// Query untuk hapus data berat 
+	query := `
+		DELETE FROM weight_entries WHERE id_user = $1
+	`
+
+	// eksekusi querry nya
+	_, err := s.db.Exec(context.Background(), query, userID)
+	return err
+}
