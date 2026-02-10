@@ -24,6 +24,29 @@ type UpdateUserPayload struct {
 	ID            int64  `json:"id_user"`
 }
 
+type FoodEntry struct {
+	ID        int64     `json:"id_food_entry"`
+	IDUser    string    `json:"id_user"`    
+	FoodName  string    `json:"food_name"`
+	Date      string    `json:"date"`
+	Time      string    `json:"time"`
+	Calories  float64   `json:"calories"`
+	Protein   float64   `json:"protein"`
+	Carbs     float64   `json:"carbs"`
+	Fats      float64   `json:"fats"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type FoodEntryPayload struct {
+	FoodName string  `json:"food_name"`
+	Date     string  `json:"date"`
+	Time     string  `json:"time"`
+	Calories float64 `json:"calories"`
+	Protein  float64 `json:"protein"`
+	Carbs    float64 `json:"carbs"`
+	Fats     float64 `json:"fats"`
+}
+
 // Types untuk Input (Request)
 type CreateWeightEntryPayload struct {
 	Weight float64 `json:"weight_kg"`
