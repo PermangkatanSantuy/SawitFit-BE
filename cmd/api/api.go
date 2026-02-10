@@ -8,14 +8,15 @@ import (
 	"github.com/go-chi/chi"            // untuk handler link yang dituju
 	"github.com/go-chi/chi/middleware" // Middleware bawaan untuk log
 	"github.com/internal/auth"
-	"github.com/jackc/pgx/v5/pgxpool" // <-- Pakai library temanmu
+	"github.com/jackc/pgx/v5/pgxpool" 
 	"github.com/service/user"
+	"github.com/service/food"
 	"github.com/service/weight"
 )
 
 type APIServer struct {
 	addr string
-	db   *pgxpool.Pool // <-- Ubah dari *sql.DB jadi *pgxpool.Pool
+	db   *pgxpool.Pool 
 	verifier *auth.Verifier
 }
 
@@ -42,9 +43,13 @@ func (s *APIServer) Run() error {
 	userStore := user.NewStore(s.db)
 	userHandler := user.NewHandler(userStore)
 	
-	// 3. Setup Service User
+	// 4. Setup Service Weight
 	weightStore := weight.NewStore(s.db)
 	weightHandler := weight.NewHandler(weightStore)
+
+	//5. Setup Service Food
+	foodStore := food.NewStore(s.db)
+	foodHandler := food.NewHandler(foodStore)
 
 	// Fungsi: Membuat "folder" khusus agar semua link diawali dengan "/api/v1".
 	router.Route("/api/v1", func(r chi.Router) {
@@ -54,6 +59,7 @@ func (s *APIServer) Run() error {
 		// dari "localhost:8080/me" MENJADI "localhost:8080/api/v1/me"
 		userHandler.RegisterRoutes(r)
 		weightHandler.RegisterRoutes(r)
+		foodHandler.RegisterRoutes(r)
 	})
 
 	log.Println("Server berjalan di", s.addr)
