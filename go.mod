@@ -3,7 +3,10 @@ module github.com
 go 1.25.3
 
 require (
-	github.com/gorilla/mux v1.8.1
+	github.com/MicahParks/keyfunc/v2 v2.1.0
+	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/chi/v5 v5.2.5
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/joho/godotenv v1.5.1
 )

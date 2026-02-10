@@ -21,22 +21,22 @@ type UpdateUserPayload struct {
 	FullName      string `json:"full_name" validate:"required"`
 	FitnessGoal   string `json:"fitness_goal"`
 	ActivityLevel string `json:"activity_level"`
+	ID            int64  `json:"id_user"`
 }
 
 type FoodEntry struct {
 	ID        int64     `json:"id_food_entry"`
-	IDUser    int64     `json:"id_user"`
+	IDUser    string    `json:"id_user"`    
 	FoodName  string    `json:"food_name"`
-	Date      string    `json:"date"`     // Format YYYY-MM-DD
-	Time      string    `json:"time"`     // Format HH:MM:SS
-	Calories  float64   `json:"calories"` // float8 di DB = float64 di Go
+	Date      string    `json:"date"`
+	Time      string    `json:"time"`
+	Calories  float64   `json:"calories"`
 	Protein   float64   `json:"protein"`
 	Carbs     float64   `json:"carbs"`
-	Fats      float64   `json:"fats"`     // Pake 's' sesuai screenshot
+	Fats      float64   `json:"fats"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// Data yang dikirim User lewat Postman/Android
 type FoodEntryPayload struct {
 	FoodName string  `json:"food_name"`
 	Date     string  `json:"date"`
@@ -45,4 +45,20 @@ type FoodEntryPayload struct {
 	Protein  float64 `json:"protein"`
 	Carbs    float64 `json:"carbs"`
 	Fats     float64 `json:"fats"`
+}
+
+// Types untuk Input (Request)
+type CreateWeightEntryPayload struct {
+	Weight float64 `json:"weight_kg"`
+	Date   string  `json:"date"` // Format: "YYYY-MM-DD" (Contoh: "2026-02-02")
+	ID     string   `json:"id_user"`
+}
+
+// Types untuk Output (Response dari Database)
+type WeightEntry struct {
+	ID        int64   `json:"id"`
+	UserID    string  `json:"user_id"`
+	Weight    float64 `json:"weight_kg"`
+	Date      string  `json:"date"`
+	CreatedAt string  `json:"created_at"`
 }
