@@ -23,6 +23,8 @@ func (h *Handler) RegisterRoutes(router chi.Router) {
 	router.Route("/food", func(r chi.Router) {
 		r.Post("/", h.handleAddFood)
 		r.Get("/{date}", h.handleGetFoodByDate)
+
+		r.Delete("/reset", h.handleResetFoodEntries)
 	})
 }
 
@@ -94,4 +96,20 @@ func (h *Handler) handleGetFoodByDate(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.WriteJSON(w, http.StatusOK, foods)
+}
+
+func (h *Handler) handleResetFoodEntries(w http.ResponseWriter, r *http.Request) {
+	authUser, err := auth.UserFromContext(r.Context())
+	if err != nil {
+		utils.WriteError(w, http.StatusUnauthorized, fmt.Errorf("akses ditolak: %v", err))
+		return
+	}
+	userID := authUser.Sub
+
+	if err := h.store.resetFoodEntries(userID); err != nil {
+		utils.WriteError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	utils.WriteJSON(w, http.StatusCreated, map[string]string{"message": "Entry makanan berhasil di reset"})
 }

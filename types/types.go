@@ -5,7 +5,7 @@ import "time"
 // User: Sesuai tabel 'users' di Supabase
 // ID User menggunakan int64 karena di database tipenya int8 (BigInt)
 type User struct {
-	ID             int64     `json:"id_user"`
+	ID             string     `json:"id_user"`
 	Email          string    `json:"email"`
 	Password       string    `json:"-"` // Tidak dikirim ke JSON
 	FullName       string    `json:"full_name"`
@@ -21,7 +21,7 @@ type UpdateUserPayload struct {
 	FullName      string `json:"full_name" validate:"required"`
 	FitnessGoal   string `json:"fitness_goal"`
 	ActivityLevel string `json:"activity_level"`
-	ID            int64  `json:"id_user"`
+	ID            string  `json:"id_user"`
 }
 
 type FoodEntry struct {

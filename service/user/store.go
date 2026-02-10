@@ -17,7 +17,7 @@ func NewStore(db *pgxpool.Pool) *Store {
 	return &Store{db: db}
 }
 
-func (s *Store) GetUserByID(userID int64) (*types.User, error) {
+func (s *Store) GetUserByID(userID string) (*types.User, error) {
 	// PERBAIKAN: Gunakan COALESCE(kolom, '')
 	// Artinya: Kalau datanya NULL, ganti jadi string kosong ('').
 	// Ini berlaku buat email juga kalau-kalau dia NULL.

@@ -3,6 +3,7 @@ package food
 import (
 	"context"
 	"fmt"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/types"
 )
@@ -21,7 +22,7 @@ func (s *Store) CreateFoodEntry(entry types.FoodEntry) error {
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
 	`
 	_, err := s.db.Exec(context.Background(), query,
-		entry.IDUser, 
+		entry.IDUser,
 		entry.FoodName,
 		entry.Date,
 		entry.Time,
@@ -59,4 +60,11 @@ func (s *Store) GetFoodEntriesByDate(userID string, date string) ([]types.FoodEn
 		entries = append(entries, e)
 	}
 	return entries, nil
+}
+
+func (s *Store) resetFoodEntries(userID string) error {
+	query := `DELETE FROM food_entries WHERE id_user = $1`
+
+	_, err := s.db.Exec(context.Background(), query, userID)
+	return err
 }

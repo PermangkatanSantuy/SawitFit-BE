@@ -74,7 +74,7 @@ func (h *Handler) handleUpsertUser(w http.ResponseWriter, r *http.Request) {
 
 	// Siapkan Objek User
 	user := types.User{
-		ID:            payload.ID,
+		ID:            authUser.Sub,
 		Email:         authUser.Email, // TODO: Ambil dari Token JWT nanti
 		FullName:      payload.FullName,
 		FitnessGoal:   payload.FitnessGoal,
