@@ -36,7 +36,22 @@ func (s *APIServer) Run() error {
 	// Logger: Agar kamu bisa lihat di terminal siapa yang akses API
 	// Recoverer: Agar server tidak mati total (crash) kalau ada error fatal
 	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
+	router.Use(func(next http.Handler) http.Handler {
+        return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            defer func() {
+                if err := recover(); err != nil {
+                    // 1. Log error buat Developer (di terminal)
+                    log.Printf("PANIC: %v\n", err)
+                    
+                    // 2. Sembunyikan error dari User (kasih JSON generik)
+                    w.Header().Set("Content-Type", "application/json")
+                    w.WriteHeader(http.StatusInternalServerError)
+                    w.Write([]byte(`{"error": "Internal Server Error"}`))
+                }
+            }()
+            next.ServeHTTP(w, r)
+        })
+    })
 	router.Use(auth.Middleware(s.verifier))
 
 	// 3. Setup Service User
