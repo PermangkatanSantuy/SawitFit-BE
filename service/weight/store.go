@@ -2,6 +2,7 @@ package weight
 
 import (
 	"context" // <-- Wajib ada buat pgx
+	"fmt"
 
 	// Buat handle error
 	"github.com/jackc/pgx/v5/pgxpool" // Library temanmu
@@ -70,4 +71,42 @@ func (s *Store) ResetWeightHistory(userID string) error {
 	// eksekusi querry nya
 	_, err := s.db.Exec(context.Background(), query, userID)
 	return err
+}
+
+func (s *Store) GetWeightHistoryPaginated(userID string, limit int, cursor string) ([]types.WeightEntry, error) {
+	query := `
+		SELECT id_weight_entry, id_user, weight_kg, date, created_at
+		FROM weight_entries
+		WHERE id_user = $1
+	`
+
+	args := []interface{}{userID}
+	argCount := 2
+
+	if cursor != "" {
+		query += fmt.Sprintf(" AND created_at < $%d", argCount)
+		args = append(args, cursor)
+		argCount++
+	}
+
+	query += fmt.Sprintf(" ORDER BY created_at DESC LIMIT $%d", argCount)
+	args = append(args, limit)
+
+	rows, err := s.db.Query(context.Background(), query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	entries := make([]types.WeightEntry, 0)
+	for rows.Next() {
+		var e types.WeightEntry
+		if err := rows.Scan(&e.ID, &e.UserID, &e.Weight, &e.Date, &e.CreatedAt); err != nil {
+			return nil, err
+		}
+
+		entries = append(entries, e)
+	}
+
+	return entries, nil
 }
